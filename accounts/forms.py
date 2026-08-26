@@ -2,6 +2,7 @@ from django import forms
 from .models import User
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth import authenticate
 
 
 class UserCreationForm(forms.ModelForm):
@@ -34,5 +35,48 @@ class UserChangeForm(forms.ModelForm):
         fields = ('phone_number', 'email', 'full_name', 'password', 'last_login')
 
 
+class UserRegistrationForm(forms.Form):
+    email = forms.EmailField()
+    phone_number = forms.CharField(max_length=11)
+    full_name = forms.CharField(label='full_name')
+    password = forms.CharField(widget=forms.PasswordInput)
 
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        user = User.objects.filter(email=email).exists()
+        if user:
+            raise ValidationError("Email already exists")
+        return email
+
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data['phone_number']
+        user = User.objects.filter(phone_number=phone_number).exists()
+        if user:
+            raise ValidationError("Phone number already exists")
+        return phone_number
+
+
+class VerifyCodeForm(forms.Form):
+    code = forms.IntegerField()
+
+
+class UserLoginForm(forms.Form):
+    phone_number = forms.CharField(max_length=11)
+    password = forms.CharField(widget=forms.PasswordInput)
+
+
+    def clean(self):
+        cd = super().clean()
+
+        phone_number = self.cleaned_data.get('phone_number')
+        password = self.cleaned_data.get('password')
+
+        if phone_number and password:
+            user = authenticate(phone_number=phone_number, password=password)
+            if user is None:
+                raise forms.ValidationError("Phone number or password is incorrect")
+            cd['user'] = user
+        return cd
 
