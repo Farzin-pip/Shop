@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_p*^#om!9yk5_p0vfxos#8v=z6yp2s2+28iebj0yy+449#ea@l'
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env")
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -129,3 +132,30 @@ MAILERS = {
 }
 
 AUTH_USER_MODEL = 'accounts.User'
+
+
+# Arvan cloud storages
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_S3_ENDPOINT_URL = "https://s3.ir-thr-at1.arvanstorage.ir"
+AWS_STORAGE_BUCKET_NAME = 'shop-af'
+AWS_SERVICE_NAME = 's3'
+AWS_S3_OVERWRITE = False
+AWS_S3_REGION_NAME = "ir-thr-at1"
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
+AWS_LOCAL_STORAGE = f'{BASE_DIR}/aws/'
+
+
+# Kavenegar
+
+KAVENEGAR_API_KEY = env("KAVENEGAR_API_KEY")
