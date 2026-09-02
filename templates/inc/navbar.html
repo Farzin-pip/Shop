@@ -8,6 +8,9 @@
                 <li><a href="#">Products</a></li>
                 <li><a href="#">About Us</a></li>
                 <li><a href="#">Contact</a></li>
+                {% if request.user.is_admin %}
+                    <li><a href="{% url 'home:bucket' %}" class="active">Home</a></li>
+                {% endif %}
             </ul>
 
             <button class="login-btn"><a href="{% url 'accounts:user_login' %}" class="active">Login</a></button>
