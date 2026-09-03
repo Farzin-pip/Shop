@@ -9,7 +9,7 @@
                 <li><a href="#">About Us</a></li>
                 <li><a href="#">Contact</a></li>
                 {% if request.user.is_admin %}
-                    <li><a href="{% url 'home:bucket' %}" class="active">Home</a></li>
+                    <li><a href="{% url 'home:bucket' %}" class="active">Bucket</a></li>
                 {% endif %}
             </ul>
 

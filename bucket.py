@@ -2,6 +2,8 @@ import boto3
 from django.conf import settings
 import os
 
+from myshop.settings import AWS_STORAGE_BUCKET_NAME
+
 
 class Bucket:
     """CDN Bucket Manager
@@ -25,6 +27,31 @@ class Bucket:
             return result['Contents']
         else:
             return None
+
+
+    def delete_object(self, key):
+        self.conn.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
+        return True
+
+
+    def download_object(self, key):
+        with open(settings.AWS_LOCAL_STORAGE + key, 'wb') as f:
+            self.conn.download_fileobj(settings.AWS_STORAGE_BUCKET_NAME, key, f)
+
+
+    def save_temp_file(self, file):
+        path = os.path.join(settings.AWS_LOCAL_STORAGE, file.name)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb+") as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+        return path
+
+
+    def upload_object(self, path, key):
+        with open(path, "rb") as f:
+            self.conn.upload_fileobj(f, Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key,)
+        return True
 
 
 bucket = Bucket()

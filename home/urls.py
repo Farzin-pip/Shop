@@ -1,10 +1,18 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 
 app_name = 'home'
+
+bucket_urls = [
+    path('',views.BucketHomeView.as_view(), name='bucket_home'),
+    path('delete_obj/<path:key>/', views.DeleteBucketObjectView.as_view(), name='delete_obj_bucket'),
+    path('download_obj/<path:key>/', views.DownloadBucketObjectView.as_view(), name='download_obj_bucket'),
+    path('upload_object/', views.UploadObjectView.as_view(), name='upload_obj_bucket'),
+]
+
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
-    path('bucket', views.BucketHomeView.as_view(), name='bucket'),
+    path('bucket', include(bucket_urls)),
     path('<slug:slug>/', views.ProductDetailView.as_view(), name='product_detail'),
 ]
