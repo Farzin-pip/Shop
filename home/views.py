@@ -4,6 +4,7 @@ from . import tasks
 from .models import Product
 from django.contrib import messages
 from bucket import bucket
+from utils import IsAdminUserMixin
 
 
 class HomeView(View):
@@ -18,28 +19,28 @@ class ProductDetailView(View):
         return render(request, 'home/detail.html', {'product': product})
 
 
-class BucketHomeView(View):
+class BucketHomeView(IsAdminUserMixin ,View):
     template_name = 'home/bucket.html'
     def get(self, request):
         object = tasks.all_bucket_objects_task()
         return render(request, self.template_name, {'objects': object})
 
 
-class DeleteBucketObjectView(View):
+class DeleteBucketObjectView(IsAdminUserMixin ,View):
     def get(self, request, key):
         tasks.delete_bucket_object_task.delay(key)
         messages.success(request, 'Bucket Object Deleted Successfully', 'info')
         return redirect('home:bucket_home')
 
 
-class DownloadBucketObjectView(View):
+class DownloadBucketObjectView(IsAdminUserMixin ,View):
     def get(self, request, key):
         tasks.download_bucket_object_task.delay(key)
         messages.success(request, 'Bucket Object Downloaded Successfully', 'info')
         return redirect('home:bucket_home')
 
 
-class UploadObjectView(View):
+class UploadObjectView(IsAdminUserMixin ,View):
     def post(self, request):
         file = request.FILES.get("file")
 

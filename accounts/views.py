@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.utils import timezone
 import datetime
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class UserRegister(View):
@@ -127,7 +128,7 @@ class UserLoginVerifyCodeView(View):
         return redirect('home:home')
 
 
-class UserLogout(View):
+class UserLogout(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         messages.success(request, 'You have successfully logged out', 'success')
